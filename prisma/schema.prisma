@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. गानों का टेबल
+model Song {
+  id         String   @id @default(uuid()) // Unique ID
+  title      String
+  author     String
+  song_path  String   // MP3 फाइल का लिंक (Supabase Storage से)
+  image_path String   // फोटो का लिंक
+  created_at DateTime @default(now())
+  
+  // Playlist के साथ रिश्ता
+  liked_by_users LikedSong[]
+}
+
+// 2. यूजर का टेबल (Liked Songs के लिए)
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  liked_songs LikedSong[]
+}
+
+// 3. कौन सा गाना किस यूजर ने लाइक किया
+model LikedSong {
+  user_id String
+  song_id String
+  
+  user User @relation(fields: [user_id], references: [id])
+  song Song @relation(fields: [song_id], references: [id])
+
+  @@id([user_id, song_id]) // Composite Key
+}
