@@ -10,6 +10,7 @@ interface SearchProps {
 }
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 const Search = async ({ searchParams }: SearchProps) => {
   const songs = await getSongsByTitle(searchParams.title);
