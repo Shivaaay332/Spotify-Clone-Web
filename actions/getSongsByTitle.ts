@@ -1,7 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-import getSongs from "./getSongs";
+import getSongs from "./fetchSongs";
 
 // Song type yahin bhi daal diya safety ke liye
 interface Song {

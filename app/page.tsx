@@ -1,57 +1,61 @@
-import getSongsByTitle from "@/actions/getSongsByTitle";
-import SearchInput from "@/components/SearchInput";
-import SongItem from "@/components/SongItem";
 import Header from "@/components/Header";
+import ListItem from "@/components/ListItem";
 
-interface SearchProps {
-  searchParams: {
-    title: string;
-  }
-}
+// DHYAN DEIN: Yahan filename sahi honi chahiye
+// Agar actions folder me file ka naam 'getSongs.ts' hai to niche 'getSongs' likhein
+// Agar 'fetchSongs.ts' hai to 'fetchSongs' likhein
+import getSongs from "@/actions/fetchSongs"; 
+
+import PageContent from "@/components/PageContent";
 
 export const revalidate = 0;
 
-const Search = async ({ searchParams }: SearchProps) => {
-  const songs = await getSongsByTitle(searchParams.title);
+export default async function Home() {
+  const songs = await getSongs();
 
   return (
     <div className="
-      bg-neutral-100 
-      dark:bg-neutral-900 
+      bg-neutral-900 
       rounded-lg 
       h-full 
       w-full 
       overflow-hidden 
       overflow-y-auto
     ">
-      {/* Header ke andar Search Input lagayenge */}
-      <Header className="from-bg-neutral-900">
-        <div className="mb-2 flex flex-col gap-y-6">
-          <h1 className="text-black dark:text-white text-3xl font-semibold">
-            Search
+      <Header>
+        <div className="mb-2">
+          <h1 className="
+            text-white 
+            text-3xl 
+            font-semibold
+          ">
+            Welcome back
           </h1>
-          <SearchInput />
+          <div className="
+            grid 
+            grid-cols-1 
+            sm:grid-cols-2 
+            xl:grid-cols-3 
+            2xl:grid-cols-4 
+            gap-3 
+            mt-4
+          ">
+            <ListItem 
+              image="/images/liked.png" 
+              name="Liked Songs" 
+              href="liked" 
+            />
+          </div>
         </div>
       </Header>
-      
-      <div className="px-6 mb-7">
-        {songs.length === 0 ? (
-          <div className="text-neutral-500 dark:text-neutral-400">
-            No songs found.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-8 gap-4">
-            {songs.map((song) => (
-              <SongItem 
-                key={song.id} 
-                data={song} 
-              />
-            ))}
-          </div>
-        )}
+      <div className="mt-2 mb-7 px-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-white text-2xl font-semibold">
+            Newest songs
+          </h1>
+        </div>
+        <PageContent songs={songs} />
       </div>
     </div>
-  );
+  )
 }
-
-export default Search;
