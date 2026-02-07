@@ -1,8 +1,17 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-import { Song } from "@/types";
 import getSongs from "./getSongs";
+
+// Song type yahin bhi daal diya safety ke liye
+interface Song {
+  id: string;
+  user_id: string;
+  author: string;
+  title: string;
+  song_path: string;
+  image_path: string;
+}
 
 const getSongsByTitle = async (title: string): Promise<Song[]> => {
   try {
@@ -22,7 +31,7 @@ const getSongsByTitle = async (title: string): Promise<Song[]> => {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.log("Search Error ignored:", error.message);
+      console.log("Search error ignored:", error.message);
       return [];
     }
 
