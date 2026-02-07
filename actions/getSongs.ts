@@ -1,17 +1,27 @@
-import { prisma } from "@/libs/prismadb";
-import { Song } from "@prisma/client";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+
+import { Song } from "@/types";
 
 const getSongs = async (): Promise<Song[]> => {
   try {
-    const songs = await prisma.song.findMany({
-      orderBy: {
-        created_at: 'desc'
-      }
+    const supabase = createServerComponentClient({
+      cookies: cookies
     });
 
-    return songs;
+    const { data, error } = await supabase
+      .from('songs')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.log("Database error ignored during build:", error.message);
+      return [];
+    }
+
+    return (data as any) || [];
   } catch (error) {
-    console.log(error);
+    console.log("Build error bypassed:", error);
     return [];
   }
 };

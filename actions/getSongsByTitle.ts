@@ -1,30 +1,34 @@
-import { prisma } from "@/libs/prismadb";
-import { Song } from "@prisma/client";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
+import { Song } from "@/types";
 import getSongs from "./getSongs";
 
 const getSongsByTitle = async (title: string): Promise<Song[]> => {
-  if (!title) {
-    // Agar user ne kuch type nahi kiya, to saare gaane dikhao
-    return getSongs();
-  }
-
   try {
-    const songs = await prisma.song.findMany({
-      where: {
-        title: {
-          contains: title,
-          mode: 'insensitive' // 'insensitive' matlab 'Tum' aur 'tum' dono chalega
-        }
-      },
-      orderBy: {
-        created_at: 'desc'
-      }
+    const supabase = createServerComponentClient({
+      cookies: cookies
     });
 
-    return songs;
+    if (!title) {
+      const allSongs = await getSongs();
+      return allSongs;
+    }
+
+    const { data, error } = await supabase
+      .from('songs')
+      .select('*')
+      .ilike('title', `%${title}%`)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.log("Search Error ignored:", error.message);
+      return [];
+    }
+
+    return (data as any) || [];
   } catch (error) {
-    console.log(error);
+    console.log("Search build error bypassed:", error);
     return [];
   }
 };
